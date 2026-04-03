@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="PieceData" format=3 uid="uid://ie3ibapgpmjc"]
+
+[ext_resource type="Texture2D" uid="uid://bmu2tk14pfgal" path="res://icon.svg" id="1_1l2ae"]
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_rqjw4"]
+
+[resource]
+script = ExtResource("1_rqjw4")
+piece_name = "スケルトン"
+character_texture = ExtResource("1_1l2ae")
+attack_power = 2
+has_immediate_effect = true
+left_joints = Array[int]([0, 1, 0])
+right_joints = Array[int]([0, 1, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"

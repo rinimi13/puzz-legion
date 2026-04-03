@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnemyDataset" format=3 uid="uid://bfa40gsysyhby"]
+
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_xrnt0"]
+[ext_resource type="Script" uid="uid://bqxwdyqoboon3" path="res://Scripts/DataModels/EnemyDataset.gd" id="2_b5gp3"]
+[ext_resource type="Resource" uid="uid://cc3pjov8ki1cx" path="res://Resources/Enemy_Actions/sol.tres" id="2_xtii7"]
+[ext_resource type="Resource" uid="uid://bv7hhiye0vcvx" path="res://Resources/Enemy_Actions/attack1.tres" id="3_ekfoh"]
+
+[resource]
+script = ExtResource("2_b5gp3")
+action_pool = Array[ExtResource("1_xrnt0")]([ExtResource("2_xtii7"), ExtResource("3_ekfoh")])
+metadata/_custom_type_script = "uid://bqxwdyqoboon3"

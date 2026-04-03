@@ -1,0 +1,231 @@
+[gd_scene format=3 uid="uid://bb5t7ao64104b"]
+
+[ext_resource type="Script" uid="uid://c0lrgpu2osfk" path="res://Scripts/Core/BoradManager.gd" id="1_rgh2o"]
+[ext_resource type="Resource" uid="uid://b41yx8egeauia" path="res://Resources/Stage/stage_01.tres" id="2_jw32o"]
+[ext_resource type="Script" uid="uid://bkeksl7weh1xs" path="res://Scripts/View/BoardView.gd" id="2_v1gob"]
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="3_jw32o"]
+[ext_resource type="Resource" uid="uid://cu4l4gd1fjydx" path="res://Resources/Pieces/slime.tres" id="3_v1gob"]
+[ext_resource type="Resource" uid="uid://ie3ibapgpmjc" path="res://Resources/Pieces/skeleton.tres" id="4_jw32o"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v1gob"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_v1gob"]
+font_size = 32
+font_color = Color(0.88470787, 0.31308806, 0.28474587, 1)
+outline_size = 9
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jw32o"]
+bg_color = Color(0, 0.86, 0.1433332, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_jw32o"]
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_50glp"]
+bg_color = Color(0.84, 0.058799993, 0.058799993, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_50glp"]
+outline_size = 5
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_vy5pj"]
+font_size = 100
+font_color = Color(1, 0, 0, 1)
+outline_size = 20
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Main" type="Node2D" unique_id=800968528]
+visibility_layer = 2
+script = ExtResource("1_rgh2o")
+current_stage = ExtResource("2_jw32o")
+starting_deck = Array[ExtResource("3_jw32o")]([ExtResource("3_v1gob"), ExtResource("3_v1gob"), ExtResource("3_v1gob"), ExtResource("4_jw32o"), ExtResource("4_jw32o"), ExtResource("3_v1gob"), ExtResource("4_jw32o"), ExtResource("3_v1gob"), ExtResource("4_jw32o"), ExtResource("3_v1gob"), ExtResource("3_v1gob")])
+
+[node name="BoardView" type="Node2D" parent="." unique_id=240041165]
+position = Vector2(255, 50)
+script = ExtResource("2_v1gob")
+
+[node name="BoardGuide" type="ColorRect" parent="." unique_id=558633234]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 255.0
+offset_top = 50.0
+offset_right = 895.0
+offset_bottom = 434.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=1713877446]
+
+[node name="DeckUI" type="Control" parent="UILayer" unique_id=41251962]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DimOverlay" type="ColorRect" parent="UILayer/DeckUI" unique_id=750136194]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1134.0
+offset_bottom = 621.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.124000005)
+
+[node name="DrawCountLabel" type="Label" parent="UILayer/DeckUI" unique_id=1444328569]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 580.0
+offset_right = 170.0
+offset_bottom = 630.0
+theme_override_font_sizes/font_size = 32
+text = "山札枚数"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DiscardCountLabel" type="Label" parent="UILayer/DeckUI" unique_id=994366721]
+layout_mode = 0
+offset_left = 980.0
+offset_top = 580.0
+offset_right = 1133.0
+offset_bottom = 630.0
+theme_override_font_sizes/font_size = 32
+text = "捨て札枚数"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ViewDrawButton" type="Button" parent="UILayer/DeckUI" unique_id=1458692569]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 460.0
+offset_right = 145.0
+offset_bottom = 560.0
+
+[node name="ViewDiscardButton" type="Button" parent="UILayer/DeckUI" unique_id=1397027995]
+layout_mode = 0
+offset_left = 1010.0
+offset_top = 460.0
+offset_right = 1110.0
+offset_bottom = 560.0
+
+[node name="DeckViewPanel" type="Panel" parent="UILayer/DeckUI" unique_id=927514775]
+visible = false
+layout_mode = 0
+offset_left = 320.0
+offset_top = 90.0
+offset_right = 820.0
+offset_bottom = 590.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_v1gob")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="UILayer/DeckUI/DeckViewPanel" unique_id=2009597341]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+follow_focus = true
+
+[node name="ItemList" type="VBoxContainer" parent="UILayer/DeckUI/DeckViewPanel/ScrollContainer" unique_id=1670197613]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="DamageLabel" type="Label" parent="UILayer" unique_id=662387909]
+offset_left = 892.0
+offset_top = 80.0
+offset_right = 1068.0
+offset_bottom = 125.0
+text = "100！"
+label_settings = SubResource("LabelSettings_v1gob")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayerHPBar" type="ProgressBar" parent="UILayer" unique_id=1127577790]
+offset_left = 50.0
+offset_top = 50.0
+offset_right = 150.0
+offset_bottom = 80.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_jw32o")
+value = 100.0
+show_percentage = false
+
+[node name="PlayerHPText" type="Label" parent="UILayer/PlayerHPBar" unique_id=941641298]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_jw32o")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnemyHPBar" type="ProgressBar" parent="UILayer" unique_id=24665972]
+offset_left = 1000.0
+offset_top = 50.0
+offset_right = 1100.0
+offset_bottom = 80.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_50glp")
+value = 100.0
+show_percentage = false
+
+[node name="EnemyHPText" type="Label" parent="UILayer/EnemyHPBar" unique_id=846085222]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = SubResource("LabelSettings_50glp")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResultOverlay" type="ColorRect" parent="UILayer" unique_id=1881318363]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.32156864)
+
+[node name="ResultLabel" type="Label" parent="UILayer/ResultOverlay" unique_id=2088950219]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "a"
+label_settings = SubResource("LabelSettings_vy5pj")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ExecuteButton" type="Button" parent="UILayer" unique_id=1460920378]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.5
+offset_top = -79.0
+offset_right = 62.5
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "突撃！"
+
+[connection signal="pressed" from="UILayer/ExecuteButton" to="." method="_on_execute_button_pressed"]

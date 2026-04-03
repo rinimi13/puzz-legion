@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://4o610nxcnhiq"]
+
+[ext_resource type="Script" uid="uid://c8el1snhcsxw" path="res://Scripts/Core/PieceNode.gd" id="1_nxh06"]
+[ext_resource type="Texture2D" uid="uid://bmu2tk14pfgal" path="res://icon.svg" id="2_fgsgh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v1fj0"]
+size = Vector2(64, 64)
+
+[node name="PieceNode" type="Area2D" unique_id=800932244 groups=["pieces"]]
+script = ExtResource("1_nxh06")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=785626688]
+shape = SubResource("RectangleShape2D_v1fj0")
+
+[node name="InfoUI" type="Node2D" parent="." unique_id=843575504]
+visible = false
+
+[node name="UI Background" type="ColorRect" parent="InfoUI" unique_id=756943503]
+offset_left = 28.0
+offset_top = -62.0
+offset_right = 109.0
+offset_bottom = -19.0
+color = Color(0.2760652, 0.27606523, 0.27606523, 1)
+
+[node name="NameLabel" type="Label" parent="InfoUI" unique_id=1605004847]
+offset_left = 33.0
+offset_top = -62.0
+offset_right = 103.0
+offset_bottom = -39.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+text = "name"
+horizontal_alignment = 1
+
+[node name="PowerLabel" type="Label" parent="InfoUI" unique_id=482117464]
+offset_left = 47.0
+offset_top = -42.0
+offset_right = 87.0
+offset_bottom = -19.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+text = "1"
+horizontal_alignment = 1
+
+[node name="CharacterSprite" type="Sprite2D" parent="." unique_id=1925953989]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_fgsgh")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
