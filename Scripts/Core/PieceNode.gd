@@ -218,13 +218,6 @@ func _input_event(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
 			info_ui.visible = false
 			
 			piece_picked_up.emit(self)
-			
-		elif dragging and not event.pressed:
-			dragging = false
-			z_index = 0
-			_on_drop()
-			if is_hovered:
-				info_ui.visible = true
 				
 	# --- 右クリックの処理（戻す or 回転） ---
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
@@ -299,3 +292,13 @@ func reset_rotation_state() -> void:
 	
 	if original_data:
 		piece_data = original_data
+
+func _input(event: InputEvent) -> void:
+	# ドロップ処理（左クリックを離した時）
+	if dragging and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if not event.pressed:
+			dragging = false
+			z_index = 0
+			_on_drop()
+			if is_hovered:
+				info_ui.visible = true
