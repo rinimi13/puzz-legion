@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PieceData" format=3 uid="uid://cq8qto4itk0xh"]
+
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_h162y"]
+[ext_resource type="Texture2D" uid="uid://owqslmwm072c" path="res://Assets/Pieces/T_slime04.png" id="2_rfkre"]
+
+[resource]
+script = ExtResource("1_h162y")
+piece_name = "ドロースライム"
+texture = ExtResource("2_rfkre")
+effect_type = 5
+effect_value = 2
+top_joints = Array[int]([0, 1, 2])
+bottom_joints = Array[int]([1, 0, 0])
+left_joints = Array[int]([0, 1, 0])
+right_joints = Array[int]([0, 2, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"

@@ -1,9 +1,36 @@
 [gd_scene format=3 uid="uid://bb5t7ao64104b"]
 
 [ext_resource type="Script" uid="uid://c0lrgpu2osfk" path="res://Scripts/Core/BoradManager.gd" id="1_rgh2o"]
-[ext_resource type="Resource" uid="uid://b6osh7um7s3n7" path="res://Resources/Player/C_slimeprincess.tres" id="2_rgh2o"]
+[ext_resource type="Script" uid="uid://bqxwdyqoboon3" path="res://Scripts/DataModels/EnemyData.gd" id="2_pbw6q"]
 [ext_resource type="Script" uid="uid://bkeksl7weh1xs" path="res://Scripts/View/BoardView.gd" id="2_v1gob"]
-[ext_resource type="Resource" uid="uid://dl7ibiop3nskl" path="res://Resources/Enemies/E_knight01.tres" id="3_pbw6q"]
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="3_jw32o"]
+[ext_resource type="Script" uid="uid://c2viw7mlvufb5" path="res://Scripts/DataModels/MapData.gd" id="3_v1gob"]
+
+[sub_resource type="Resource" id="Resource_jw32o"]
+script = ExtResource("2_pbw6q")
+metadata/_custom_type_script = "uid://bqxwdyqoboon3"
+
+[sub_resource type="Resource" id="Resource_50glp"]
+script = ExtResource("3_v1gob")
+stage_name = null
+enemy_info = SubResource("Resource_jw32o")
+metadata/_custom_type_script = "uid://c2viw7mlvufb5"
+
+[sub_resource type="Resource" id="Resource_vy5pj"]
+script = ExtResource("3_jw32o")
+piece_name = "スライム"
+top_joints = Array[int]([0, 1, 0])
+bottom_joints = Array[int]([0, 1, 0])
+left_joints = Array[int]([0, 2, 0])
+right_joints = Array[int]([0, 1, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"
+
+[sub_resource type="Resource" id="Resource_bmxlf"]
+script = ExtResource("3_jw32o")
+piece_name = "スケルトン"
+left_joints = Array[int]([0, 1, 0])
+right_joints = Array[int]([0, 1, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v1gob"]
 
@@ -36,8 +63,8 @@ outline_color = Color(0, 0, 0, 1)
 [node name="Main" type="Node2D" unique_id=800968528]
 visibility_layer = 2
 script = ExtResource("1_rgh2o")
-player_data = ExtResource("2_rgh2o")
-current_enemy = ExtResource("3_pbw6q")
+current_stage = SubResource("Resource_50glp")
+starting_deck = Array[ExtResource("3_jw32o")]([SubResource("Resource_vy5pj"), SubResource("Resource_vy5pj"), SubResource("Resource_vy5pj"), SubResource("Resource_bmxlf"), SubResource("Resource_bmxlf"), SubResource("Resource_vy5pj"), SubResource("Resource_bmxlf"), SubResource("Resource_vy5pj"), SubResource("Resource_bmxlf"), SubResource("Resource_vy5pj"), SubResource("Resource_vy5pj")])
 
 [node name="BoardView" type="Node2D" parent="." unique_id=240041165]
 position = Vector2(255, 50)
@@ -225,19 +252,5 @@ offset_bottom = -19.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "突撃！"
-
-[node name="PlayerPortrait" type="TextureRect" parent="UILayer" unique_id=446286904]
-offset_left = 50.0
-offset_top = 120.0
-offset_right = 150.0
-offset_bottom = 320.0
-expand_mode = 1
-stretch_mode = 5
-
-[node name="EnemyPortrait" type="TextureRect" parent="UILayer" unique_id=919430498]
-offset_left = 1000.0
-offset_top = 120.0
-offset_right = 1100.0
-offset_bottom = 320.0
 
 [connection signal="pressed" from="UILayer/ExecuteButton" to="." method="_on_execute_button_pressed"]

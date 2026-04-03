@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PieceData" format=3 uid="uid://c60pb1ldswgsy"]
+
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_nulud"]
+[ext_resource type="Texture2D" uid="uid://bmu2tk14pfgal" path="res://icon.svg" id="2_q02el"]
+
+[resource]
+script = ExtResource("1_nulud")
+piece_name = "兵士"
+texture = ExtResource("2_q02el")
+owner_type = 1
+effect_value = 3
+top_joints = Array[int]([1, 0, 1])
+bottom_joints = Array[int]([0, 1, 0])
+left_joints = Array[int]([2, 0, 2])
+right_joints = Array[int]([0, 2, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"

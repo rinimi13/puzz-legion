@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlayerData" format=3 uid="uid://b6osh7um7s3n7"]
+
+[ext_resource type="Script" uid="uid://3h0wy1r5kmjx" path="res://Scripts/DataModels/PlayerData.gd" id="1_btbki"]
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="2_irhxo"]
+[ext_resource type="Resource" uid="uid://dck085sadg8tn" path="res://Resources/Pieces/Player_Pieces/P_slime01.tres" id="3_d5aye"]
+[ext_resource type="Resource" uid="uid://m8s34sobkmja" path="res://Resources/Pieces/Player_Pieces/P_slime02.tres" id="4_fr60x"]
+[ext_resource type="Resource" uid="uid://bpyouvaf6mg3v" path="res://Resources/Pieces/Player_Pieces/P_slime03.tres" id="5_i71y3"]
+[ext_resource type="Resource" uid="uid://cq8qto4itk0xh" path="res://Resources/Pieces/Player_Pieces/P_slime04.tres" id="6_oildm"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_d5aye"]
+load_path = "res://.godot/imported/T_slime01.png-e9ea750012e9e1a8651a007fde5c0194.ctex"
+
+[resource]
+script = ExtResource("1_btbki")
+texture = SubResource("CompressedTexture2D_d5aye")
+starting_deck = Array[ExtResource("2_irhxo")]([ExtResource("3_d5aye"), ExtResource("3_d5aye"), ExtResource("4_fr60x"), ExtResource("4_fr60x"), ExtResource("5_i71y3"), ExtResource("5_i71y3"), ExtResource("5_i71y3"), ExtResource("5_i71y3"), ExtResource("6_oildm"), ExtResource("6_oildm")])
+metadata/_custom_type_script = "uid://3h0wy1r5kmjx"

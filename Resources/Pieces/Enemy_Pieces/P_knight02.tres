@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PieceData" format=3 uid="uid://bq2ovoy8vdqee"]
+
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_6pruy"]
+[ext_resource type="Texture2D" uid="uid://bmu2tk14pfgal" path="res://icon.svg" id="2_dvblx"]
+
+[resource]
+script = ExtResource("1_6pruy")
+piece_name = "盾兵"
+texture = ExtResource("2_dvblx")
+owner_type = 1
+effect_type = 1
+effect_value = 5
+top_joints = Array[int]([0, 2, 0])
+bottom_joints = Array[int]([0, 1, 0])
+left_joints = Array[int]([0, 2, 0])
+right_joints = Array[int]([0, 1, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"

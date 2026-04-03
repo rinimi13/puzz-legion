@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="StageData" format=3 uid="uid://b41yx8egeauia"]
-
-[ext_resource type="Resource" uid="uid://bfa40gsysyhby" path="res://Resources/Enemies/enemy1.tres" id="1_s0uxu"]
-[ext_resource type="Script" uid="uid://c2viw7mlvufb5" path="res://Scripts/DataModels/StageData.gd" id="3_485ej"]
-
-[resource]
-script = ExtResource("3_485ej")
-enemy_info = ExtResource("1_s0uxu")
-metadata/_custom_type_script = "uid://c2viw7mlvufb5"

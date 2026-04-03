@@ -14,7 +14,7 @@ const JOINT_DEPTH: float = 12.0
 @onready var character_sprite: Sprite2D = $CharacterSprite
 @onready var info_ui: Node2D = $InfoUI
 @onready var name_label: Label = $InfoUI/NameLabel
-@onready var power_label: Label = $InfoUI/PowerLabel
+@onready var effect_label: Label = $InfoUI/EffectLabel
 
 var dragging: bool = false
 var is_hovered: bool = false
@@ -45,15 +45,18 @@ func _ready() -> void:
 		update_visuals()
 
 func update_visuals() -> void:
-	if not is_inside_tree(): return
+	if not is_inside_tree() or piece_data == null: return
 	
-	if piece_data.character_texture:
-		character_sprite.texture = piece_data.character_texture
-		var tex_size = piece_data.character_texture.get_size()
+	if piece_data.texture:
+		character_sprite.texture = piece_data.texture
+		var tex_size = piece_data.texture.get_size()
 		character_sprite.scale = Vector2(CELL_SIZE / tex_size.x, CELL_SIZE / tex_size.y)
+	else:
+		character_sprite.texture = null
 	
-	name_label.text = piece_data.piece_name
-	power_label.text = str(piece_data.attack_power)
+	if name_label: name_label.text = piece_data.piece_name
+	if effect_label: effect_label.text = str(piece_data.effect_value)
+	
 	queue_redraw()
 
 func set_connections(in_top: Array, in_bottom: Array, in_left: Array, in_right: Array) -> void:

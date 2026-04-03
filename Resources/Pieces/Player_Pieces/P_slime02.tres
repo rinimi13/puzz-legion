@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="PieceData" format=3 uid="uid://m8s34sobkmja"]
+
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_4xmcu"]
+[ext_resource type="Texture2D" uid="uid://ckstqdqyw66ai" path="res://Assets/Pieces/T_slime02.png" id="2_4s715"]
+
+[resource]
+script = ExtResource("1_4xmcu")
+piece_name = "ディフェンススライム"
+texture = ExtResource("2_4s715")
+effect_type = 1
+effect_value = 4
+top_joints = Array[int]([0, 2, 0])
+bottom_joints = Array[int]([0, 2, 0])
+left_joints = Array[int]([0, 2, 0])
+right_joints = Array[int]([0, 2, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"

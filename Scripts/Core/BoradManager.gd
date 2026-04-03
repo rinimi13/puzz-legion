@@ -19,8 +19,11 @@ const HAND_SPACING: float = 100.0 # ピース同士の間隔
 var hand_pieces: Array = []
 var current_view_type: String = ""
 
-@export var current_stage: StageData
-@export var starting_deck: Array[PieceData] = []
+@export var player_data: PlayerData
+@export var current_enemy: EnemyData
+
+@onready var player_portrait: TextureRect = $UILayer/PlayerPortrait # プレイヤー画像
+@onready var enemy_portrait: TextureRect = $UILayer/EnemyPortrait   # 敵画像
 
 @onready var draw_count_label: Label = $UILayer/DeckUI/DrawCountLabel
 @onready var discard_count_label: Label = $UILayer/DeckUI/DiscardCountLabel
@@ -43,7 +46,6 @@ var current_view_type: String = ""
 @onready var result_label: Label = $UILayer/ResultOverlay/ResultLabel
 
 @onready var execute_button: Button = $UILayer/ExecuteButton
-@onready var enemy_dataset = preload("res://Resources/Enemies/enemy1.tres") 
 
 var current_enemy_hp: int = 0
 
@@ -53,21 +55,38 @@ func _ready() -> void:
 	
 	if board_guide: board_guide.visible = false
 	
-	_initialize_grid()
+	_initialize_grid() # ここでの current_stage エラーは前の回答で修正済み
 	
-	# 初回起動なら初期デッキをマスター登録
-	if DeckManager.master_deck.is_empty():
-		DeckManager.master_deck = starting_deck.duplicate()
+	if player_data and player_portrait:
+		if player_data.texture:
+			player_portrait.texture = player_data.texture
+		else:
+			print("警告：PlayerData にテクスチャがセットされていません。")
 	
-	if current_stage and current_stage.enemy_info:
-		var enemy = current_stage.enemy_info
-		current_enemy_hp = enemy.max_hp
-		# ステージの敵HPバーなどの最大値を更新
-		enemy_hp_bar.max_value = enemy.max_hp
+	if current_enemy and enemy_portrait:
+		if current_enemy.texture:
+			enemy_portrait.texture = current_enemy.texture
+		else:
+			print("警告：EnemyData にテクスチャがセットされていません。")
+	
+	# ==========================================
+	# ★修正：PlayerDataからHPとデッキを読み込む
+	# ==========================================
+	if player_data:
+		DeckManager.player_max_hp = player_data.max_hp
+		DeckManager.player_current_hp = player_data.max_hp
+		# 初期デッキをマスター登録
+		if DeckManager.master_deck.is_empty():
+			DeckManager.master_deck = player_data.starting_deck.duplicate()
+	
+	# ==========================================
+	# ★修正：EnemyDataから敵のHPを読み込む
+	# ==========================================
+	if current_enemy:
+		current_enemy_hp = current_enemy.max_hp
+		enemy_hp_bar.max_value = current_enemy.max_hp
 		
 	_update_hp_ui()
-	
-	# バトル開始の準備（山札作成・シャッフル）
 	DeckManager.prepare_battle()
 
 	if view_draw_button and not view_draw_button.pressed.is_connected(_on_view_draw_button_pressed):
@@ -83,24 +102,18 @@ func _ready() -> void:
 	_update_deck_ui()
 
 func _update_hp_ui():
-	# --- プレイヤー側のUI更新 ---
+	# --- プレイヤー側のUI更新 --- (そのまま)
 	player_hp_bar.max_value = DeckManager.player_max_hp
 	player_hp_bar.value = DeckManager.player_current_hp
-	
-	# ★追加：文字を「今のHP / 最大HP」の形にする
 	player_hp_text.text = str(DeckManager.player_current_hp) + " / " + str(DeckManager.player_max_hp)
 	
 	# --- 敵側のUI更新 ---
-	# ステージデータと、そのステージの敵情報がちゃんと設定されているか確認
-	if current_stage and current_stage.enemy_info:
-		# ★修正：EnemyData（敵情報）の中にある max_hp を見るように変更！
-		var enemy_max = current_stage.enemy_info.max_hp
-		
+	# ★修正：current_enemy を使うように変更
+	if current_enemy:
+		var enemy_max = current_enemy.max_hp
 		if enemy_hp_bar and enemy_hp_text:
 			enemy_hp_bar.max_value = enemy_max
 			enemy_hp_bar.value = current_enemy_hp
-			
-			# 文字を「今のHP / 最大HP」の形にする
 			enemy_hp_text.text = str(current_enemy_hp) + " / " + str(enemy_max)
 
 func _update_deck_ui() -> void:
@@ -138,10 +151,8 @@ func _initialize_grid() -> void:
 			row.append(null)
 		grid.append(row)
 	
-	# ステージデータがセットされていなければ警告を出す
-	if current_stage == null:
-		push_error("エラー：インスペクターに current_stage がセットされていません！")
-		return	
+	if current_enemy == null:
+		push_warning("警告：インスペクターに current_enemy がセットされていません！")
 	
 # ジョイントの照合を行う関数（my_joints: 自分の辺, neighbor_joints: 相手の辺）
 func check_match(my_joints: Array, neighbor_joints: Array) -> bool:
@@ -379,7 +390,7 @@ func _resolve_effects() -> void:
 		
 		var group_total_dmg = 0
 		for p in group:
-			var base_dmg = p.piece_data.attack_power
+			var base_dmg = p.piece_data.effect_value
 			var final_dmg = int(base_dmg * combo_multiplier)
 			group_total_dmg += final_dmg
 			
@@ -445,30 +456,30 @@ func _cleanup_board() -> void:
 
 # --- 3. 敵の行動 ---
 func _enemy_action_phase() -> void:
-	# 1. 敵情報がない、または既に倒しているなら何もしない
-	if not current_stage.enemy_info or current_enemy_hp <= 0:
+	# ★修正：current_enemy を使う
+	if not current_enemy or current_enemy_hp <= 0:
 		return
 	
-	var enemy = current_stage.enemy_info
-	_clear_enemy_pieces() # 前のターンの敵ピースを消す
+	var enemy = current_enemy
+	_clear_enemy_pieces()
 
 	var empty_cells = _get_empty_cells()
 	if empty_cells.is_empty(): return
 
-	# 2. 敵が持つアクションプールから抽選
-	if enemy.action_pool.is_empty():
+	# ★修正：action_pool を action_list に変更
+	if enemy.action_list.is_empty():
 		print("この敵はアクションを持っていません")
 		return
 
-	# 例：敵が一度に配置する数（敵のステータスに持たせてもOK）
-	var spawn_count = 1 
+	# ★修正：action_count を使う
+	var spawn_count = enemy.action_count 
 	empty_cells.shuffle()
 
 	for i in range(min(spawn_count, empty_cells.size())):
 		var target_cell = empty_cells[i]
 		
-		# ★ここがポイント：その敵専用のアクションプールから選ぶ
-		var random_action = enemy.action_pool.pick_random()
+		# ★修正：action_pool を action_list に変更
+		var random_action = enemy.action_list.pick_random()
 		
 		_spawn_enemy_piece(target_cell, random_action)
 

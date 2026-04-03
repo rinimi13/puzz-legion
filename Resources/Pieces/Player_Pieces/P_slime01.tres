@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="PieceData" format=3 uid="uid://dck085sadg8tn"]
+
+[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_qsaoa"]
+[ext_resource type="Texture2D" uid="uid://cv22m3ptwm7ds" path="res://Assets/Pieces/T_slime01.png" id="2_v8k2u"]
+
+[resource]
+script = ExtResource("1_qsaoa")
+piece_name = "連結スライム"
+texture = ExtResource("2_v8k2u")
+effect_value = 1
+top_joints = Array[int]([0, 2, 0])
+bottom_joints = Array[int]([0, 1, 0])
+left_joints = Array[int]([0, 1, 0])
+right_joints = Array[int]([0, 2, 0])
+metadata/_custom_type_script = "uid://c3ymebsq3mrah"

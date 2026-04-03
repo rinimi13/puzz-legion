@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EventData" format=3 uid="uid://bq5vw21qms7pr"]
+
+[ext_resource type="Script" uid="uid://bwf64uov43lgq" path="res://Scripts/DataModels/EventData.gd" id="1_cq2kg"]
+[ext_resource type="Resource" uid="uid://dl7ibiop3nskl" path="res://Resources/Enemies/E_knight01.tres" id="1_l4lsr"]
+
+[resource]
+script = ExtResource("1_cq2kg")
+possible_enemies = Array[Resource]([ExtResource("1_l4lsr")])
+metadata/_custom_type_script = "uid://bwf64uov43lgq"
