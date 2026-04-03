@@ -1,15 +1,15 @@
-[gd_resource type="Resource" script_class="EventData" format=3 uid="uid://dl7ibiop3nskl"]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://dl7ibiop3nskl"]
 
 [ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="1_jwjtb"]
 [ext_resource type="Resource" uid="uid://c60pb1ldswgsy" path="res://Resources/Pieces/Enemy_Pieces/P_knight01.tres" id="2_d48sm"]
 [ext_resource type="Script" uid="uid://bqxwdyqoboon3" path="res://Scripts/DataModels/EnemyData.gd" id="2_lar6x"]
 [ext_resource type="Resource" uid="uid://bq2ovoy8vdqee" path="res://Resources/Pieces/Enemy_Pieces/P_knight02.tres" id="3_xrqeh"]
-[ext_resource type="Texture2D" uid="uid://bmu2tk14pfgal" path="res://icon.svg" id="5_53p5r"]
+[ext_resource type="Texture2D" uid="uid://cnqqavj6n6n1a" path="res://Assets/Pieces/C_enemy.png" id="5_d48sm"]
 
 [resource]
 script = ExtResource("2_lar6x")
 enemy_name = "門番の騎士"
-texture = ExtResource("5_53p5r")
+texture = ExtResource("5_d48sm")
 action_list = Array[ExtResource("1_jwjtb")]([ExtResource("2_d48sm"), ExtResource("3_xrqeh")])
 action_weights = Array[float]([0.5, 0.5])
 metadata/_custom_type_script = "uid://bqxwdyqoboon3"
