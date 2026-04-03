@@ -8,7 +8,7 @@ const HAND_SPACING: float = 100.0 # ピースの間隔
 
 var hand_pieces: Array = []
 
-# ボス（BoardManager）に「掴んだよ！」「離したよ！」と報告するためのシグナル（専用の無線）
+# BoardManagerに報告するためのシグナル
 signal piece_picked_up_signal(piece_node)
 signal piece_dropped_signal(piece_node, drop_pos)
 
@@ -22,7 +22,7 @@ func draw_new_hand(count: int, parent_node: Node) -> void:
 		piece_node.input_pickable = true
 		piece_node.is_enemy = false
 		
-		# ボス（BoardManager）の子供として画面に追加
+		# BoardManagerの子として画面に追加
 		parent_node.add_child(piece_node)
 		piece_node.add_to_group("pieces")
 		hand_pieces.append(piece_node)
@@ -60,7 +60,7 @@ func remove_from_hand(piece_node: PieceNode) -> void:
 func clear_hand() -> void:
 	hand_pieces.clear()
 
-# --- ピースからの報告をボスに横流しする処理 ---
+# --- ピースからの報告を流す処理 ---
 func _on_piece_picked_up(piece_node: PieceNode) -> void:
 	piece_picked_up_signal.emit(piece_node)
 

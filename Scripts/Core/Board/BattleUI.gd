@@ -88,7 +88,7 @@ func show_result(is_victory: bool) -> void:
 	var tween = create_tween()
 	tween.tween_property(result_overlay, "modulate:a", 1.0, 1.0)
 
-# --- 山札・捨て札の確認画面（以下そのままお引っ越し） ---
+# --- 山札・捨て札の確認画面 ---
 func _on_view_draw_button_pressed() -> void:
 	if deck_view_panel.visible and current_view_type == "draw": _close_deck_view()
 	else:
@@ -105,8 +105,14 @@ func _close_deck_view() -> void:
 	deck_view_panel.visible = false
 	dim_overlay.visible = false
 	current_view_type = ""
+	
+	if execute_button:
+		execute_button.disabled = false
 
 func _show_deck_view(title_text: String, pile: Array) -> void:
+	if execute_button:
+		execute_button.disabled = true
+	
 	for child in item_list.get_children(): child.queue_free()
 		
 	var top_spacer = Control.new()

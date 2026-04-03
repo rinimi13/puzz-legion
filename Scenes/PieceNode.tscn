@@ -16,27 +16,27 @@ shape = SubResource("RectangleShape2D_v1fj0")
 visible = false
 
 [node name="UI Background" type="ColorRect" parent="InfoUI" unique_id=756943503]
-offset_left = 28.0
-offset_top = -62.0
-offset_right = 109.0
-offset_bottom = -19.0
+offset_left = 10.0
+offset_top = -100.0
+offset_right = 110.0
+offset_bottom = -20.0
 color = Color(0.2760652, 0.27606523, 0.27606523, 1)
 
 [node name="NameLabel" type="Label" parent="InfoUI" unique_id=1605004847]
-offset_left = 33.0
-offset_top = -62.0
-offset_right = 103.0
-offset_bottom = -39.0
+offset_left = 24.0
+offset_top = -100.0
+offset_right = 94.0
+offset_bottom = -77.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 text = "name"
 horizontal_alignment = 1
 
 [node name="EffectLabel" type="Label" parent="InfoUI" unique_id=482117464]
-offset_left = 47.0
-offset_top = -42.0
-offset_right = 87.0
-offset_bottom = -19.0
+offset_left = 39.0
+offset_top = -65.0
+offset_right = 79.0
+offset_bottom = -42.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 text = "1"
