@@ -12,6 +12,7 @@ const CELL_SIZE: float = 64.0
 
 @export var player_data: PlayerData
 @export var current_enemy: EnemyData
+@export var reward_pool: Array[PieceData]
 
 @onready var board_guide: ColorRect = $BoardGuide
 @onready var BOARD_OFFSET: Vector2 = board_guide.position
@@ -20,7 +21,11 @@ const CELL_SIZE: float = 64.0
 
 var grid_system: GridSystem
 var hand_manager: HandManager
+var is_processing_turn: bool = false
+
 var current_enemy_hp: int = 0
+var current_player_block: int = 0 
+var next_turn_extra_draw: int = 0 # ★追加：次のターンの追加ドロー数
 
 
 # ==========================================
@@ -105,15 +110,36 @@ func _on_piece_dropped(piece_node: PieceNode, drop_pos: Vector2) -> void:
 ## 「実行」ボタンが押された時に呼ばれる、ターンの進行を管理する処理。
 ## ダメージ計算 -> 盤面の掃除 -> 敵の行動 -> 新しい手札のドロー を順次実行する。
 func _on_execute_button_pressed() -> void:
-	_resolve_effects()
+	if is_processing_turn: return
+	is_processing_turn = true
+	if execute_button: execute_button.disabled = true
+	
+	await _resolve_effects()
+	
+	if current_enemy_hp > 0:
+		await _receive_enemy_damage()
+	
 	_cleanup_board()
 	_enemy_action_phase()
-	hand_manager.draw_new_hand(5, self)
+	
+	current_player_block = 0
+	
+	# ==========================================
+	# ★変更：基本の5枚 ＋ 予約分をドローする
+	var total_draw_count = 5 + next_turn_extra_draw
+	hand_manager.draw_new_hand(total_draw_count, self)
+	
+	# ドローが終わったので予約をリセット
+	next_turn_extra_draw = 0
+	# ==========================================
+	
+	_update_hp_ui()
 	_update_deck_ui()
 	_update_all_connections()
+	
+	is_processing_turn = false
+	if execute_button: execute_button.disabled = false
 
-
-# ==========================================
 # 4. バトルの進行フェーズ（ゲームループ）
 # ==========================================
 
@@ -127,48 +153,175 @@ func _resolve_effects() -> void:
 		battle_ui.show_damage_popup("0")
 		return
 		
+	var total_attack = 0
+	var total_defend = 0
+	var total_draw = 0
 	var display_text = ""
-	var total_all_dmg = 0
+	
+	# ★設定スイッチ：敵に繋がっていない孤立グループを無効にするか？（true:無効になる / false:左上を起点に発動する）
+	var require_enemy_connection: bool = true 
 	
 	for i in range(groups.size()):
 		var group = groups[i]
 		
-		# グループ内で「黄色に光っているジョイント」の総数をカウントする
-		var active_joint_count = 0
+		# 孤立チェック
+		var has_enemy_connection = false
+		var all_enemies = get_tree().get_nodes_in_group("pieces").filter(func(p): return p.is_enemy and p.board_pos.x != -1)
 		for p in group:
-			# 各ピースの4辺（それぞれ3つのジョイント）の中で、true（光っている）ものを数える
-			for c in p.conn_top:
-				if c: active_joint_count += 1
-			for c in p.conn_bottom:
-				if c: active_joint_count += 1
-			for c in p.conn_left:
-				if c: active_joint_count += 1
-			for c in p.conn_right:
-				if c: active_joint_count += 1
-		
-		var count_for_combo = (active_joint_count + 1) / 2
-		
-		# ジョイント1つにつき 0.1倍（基本1.0倍 ＋ 0.1 × ジョイント数）
-		var combo_multiplier = 1.0 + (count_for_combo * 0.1) 
-		
-		var group_total_dmg = 0
-		for p in group:
-			var base_dmg = p.piece_data.effect_value
-			var final_dmg = int(base_dmg * combo_multiplier)
-			group_total_dmg += final_dmg
+			for enemy in all_enemies:
+				if _count_active_joints_between(p, enemy) > 0:
+					has_enemy_connection = true
+					break
+			if has_enemy_connection: break
 			
-		total_all_dmg += group_total_dmg
+		if require_enemy_connection and not has_enemy_connection:
+			print("敵に繋がっていないため、このグループは不発に終わった！")
+			continue
 		
-		display_text += "【" + str(count_for_combo) + "コンボ】 " + str(group_total_dmg) + "!\n"
-	
-	current_enemy_hp -= total_all_dmg
-	current_enemy_hp = max(0, current_enemy_hp)
+		# 敵に近い順（波紋状）にグループ内のピースを並び替える
+		group = _sort_group_by_enemy_distance(group, all_enemies)
+		
+		var current_multiplier = 1.0
+		var processed_pieces = []
+		
+		# 連鎖と倍率の計算
+		for p in group:
+			var new_joints_formed = 0
+			
+			# すでに処理した（自分より手前にある）ピースといくつのジョイントで合流したか
+			for processed in processed_pieces:
+				new_joints_formed += _count_active_joints_between(p, processed)
+				
+			# ==========================================
+			# ★変更：倍率を計算する前に「適用前の倍率（開始倍率）」を記憶しておく
+			var start_multiplier = current_multiplier
+			
+			# ジョイント合流ボーナス！（二辺合流なら一気に+0.2倍）
+			current_multiplier += (new_joints_formed * 0.1)
+			
+			var base_val = p.piece_data.effect_value
+			var final_val = int(base_val * current_multiplier)
+			
+			# 効果タイプ別にアイコンを設定し、トータルダメージに加算
+			var icon_text = "⚔️"
+			if "effect_type" in p.piece_data:
+				match p.piece_data.effect_type:
+					0: # ATTACK（攻撃）
+						total_attack += final_val
+						icon_text = "⚔️"
+					1: # DEFEND（防御）
+						total_defend += final_val
+						icon_text = "🛡️"
+					2: # DRAW（ドロー）
+						total_draw += final_val
+						icon_text = "🃏"
+			else:
+				total_attack += final_val
+				icon_text = "⚔️"
+				
+			# ==========================================
+			# ★書き換え：文字ではなく「計算の元データ」をピースの演出関数に投げる！
+			await p.play_activation_effect(icon_text, base_val, start_multiplier, new_joints_formed)
+			
+			# 次のピースへ進む前に、波紋が流れるような短い余韻（0.1秒待つ）
+			await get_tree().create_timer(0.1).timeout
+			# ==========================================
+						
+			processed_pieces.append(p)
+			
+# --- 計算結果の適用とUI表示 ---
+	if total_attack > 0:
+		current_enemy_hp -= total_attack
+		current_enemy_hp = max(0, current_enemy_hp)
+		display_text += "⚔️ ダメージ: " + str(total_attack) + "\n"
+		
+	if total_defend > 0:
+		# 防御力をストック
+		current_player_block += total_defend 
+		display_text += "🛡️ ブロック: " + str(total_defend) + "\n"
+		
+	if total_draw > 0:
+		# 即座に引かず、予約変数に加算
+		next_turn_extra_draw += total_draw 
+		display_text += "🃏 次ターンドロー: +" + str(total_draw) + "\n"
+			
 	_update_hp_ui()
-	
-	battle_ui.show_damage_popup(display_text)
+		
+	if display_text != "":
+		battle_ui.show_damage_popup(display_text.strip_edges())
+	elif require_enemy_connection:
+		battle_ui.show_damage_popup("MISS...") # 敵に繋がっていない時の表示
 	
 	if current_enemy_hp <= 0:
 		_stage_clear(true)
+		
+# 補助処理：グループ内のピースを「敵からの距離」で並び替える関数
+func _sort_group_by_enemy_distance(group: Array, all_enemies: Array) -> Array:
+	var queue = []
+	var distances = {} 
+	
+	for p in group:
+		distances[p] = 999 # 初期値は無限遠
+		for enemy in all_enemies:
+			if _count_active_joints_between(p, enemy) > 0:
+				distances[p] = 0
+				queue.append(p)
+				break
+				
+	# 敵に1つも繋がっていない場合は、左上を無理やり起点(0)にする
+	if queue.is_empty():
+		var top_left = group[0]
+		for p in group:
+			if p.board_pos.y < top_left.board_pos.y or (p.board_pos.y == top_left.board_pos.y and p.board_pos.x < top_left.board_pos.x):
+				top_left = p
+		distances[top_left] = 0
+		queue.append(top_left)
+
+	# 幅優先探索で距離を測る
+	while queue.size() > 0:
+		var current = queue.pop_front()
+		var current_dist = distances[current]
+		
+		for other in group:
+			if distances[other] > current_dist + 1:
+				if _count_active_joints_between(current, other) > 0:
+					distances[other] = current_dist + 1
+					queue.append(other)
+
+	var sorted_group = group.duplicate()
+	sorted_group.sort_custom(func(a, b):
+		if distances[a] != distances[b]:
+			return distances[a] < distances[b] 
+		if a.board_pos.y != b.board_pos.y:
+			return a.board_pos.y < b.board_pos.y
+		return a.board_pos.x < b.board_pos.x
+	)
+	
+	return sorted_group
+
+# 補助処理：2つのピース間で成功しているジョイント数を正確に数える関数
+func _count_active_joints_between(p1: PieceNode, p2: PieceNode) -> int:
+	var count = 0
+	var dx = p2.board_pos.x - p1.board_pos.x
+	var dy = p2.board_pos.y - p1.board_pos.y
+	
+	var data1 = p1.piece_data
+	var data2 = p2.piece_data
+	
+	if dx == 1 and dy == 0:
+		for i in range(3):
+			if grid_system.is_interlocking(data1.right_joints[i], data2.left_joints[i]): count += 1
+	elif dx == -1 and dy == 0:
+		for i in range(3):
+			if grid_system.is_interlocking(data1.left_joints[i], data2.right_joints[i]): count += 1
+	elif dx == 0 and dy == 1:
+		for i in range(3):
+			if grid_system.is_interlocking(data1.bottom_joints[i], data2.top_joints[i]): count += 1
+	elif dx == 0 and dy == -1:
+		for i in range(3):
+			if grid_system.is_interlocking(data1.top_joints[i], data2.bottom_joints[i]): count += 1
+			
+	return count
 		
 ## ターンの終わりに、盤面に置かれたプレイヤーのピースを捨て札に送る処理。
 ## 手札に残っているピースもリセット（クリア）する。
@@ -210,16 +363,82 @@ func _enemy_action_phase() -> void:
 ## 実行ボタンを無効化し、勝利・敗北のリザルト画面を表示する。
 func _stage_clear(is_victory: bool):
 	battle_ui.show_result(is_victory)
-
+	
+	if is_victory:
+		# 勝利の余韻として少し待つ
+		await get_tree().create_timer(1.5).timeout
+		
+		# 報酬プールにカードが設定されていれば抽選を開始
+		if reward_pool.size() > 0:
+			var options = []
+			var temp_pool = reward_pool.duplicate()
+			temp_pool.shuffle() # プールをシャッフル
+			
+			# 最大3枚をランダムにピックアップ
+			for i in range(min(3, temp_pool.size())):
+				options.append(temp_pool[i])
+				
+			# UIに選択画面を出させ、プレイヤーが選ぶまで待機する！
+			battle_ui.show_reward_selection(options)
+			var chosen_data = await battle_ui.reward_selected
+			
+			# ==========================================
+			# ★マスターデッキにカードを追加！！
+			DeckManager.master_deck.append(chosen_data)
+			# ==========================================
+			
+			# TODO: 次のステージへの移動処理（MapDataなど）はここに書いていきます
 
 # ==========================================
 # 5. 補助処理（ヘルパー関数）
 # ==========================================
+func _receive_enemy_damage() -> void:
+	var total_enemy_damage = 0
+	var all_pieces = get_tree().get_nodes_in_group("pieces")
+	
+	# 前のターンに敵が配置したピースのダメージを合計する
+	for p in all_pieces:
+		if p.is_enemy and p.board_pos.x != -1:
+			total_enemy_damage += p.piece_data.effect_value
+			
+	if total_enemy_damage > 0:
+		# ブロックで相殺を計算
+		var blocked = min(total_enemy_damage, current_player_block)
+		current_player_block -= blocked
+		var final_damage = total_enemy_damage - blocked
+		
+		# ダメージを受ける
+		DeckManager.player_current_hp -= final_damage
+		DeckManager.player_current_hp = max(0, DeckManager.player_current_hp)
+		
+		_update_hp_ui()
+		
+		# 被弾のポップアップ演出
+		var damage_text = "💥 敵の攻撃: " + str(total_enemy_damage)
+		if blocked > 0:
+			damage_text += " (ブロック: -" + str(blocked) + ")"
+		if final_damage > 0:
+			damage_text += "\n❤️ -" + str(final_damage)
+		else:
+			damage_text += "\n🛡️ NO DAMAGE!"
+			
+		battle_ui.show_damage_popup(damage_text)
+		
+		# テキストを見せるために少し待つ
+		await get_tree().create_timer(1.2).timeout
+		
+		# ゲームオーバー判定
+		if DeckManager.player_current_hp <= 0:
+			_stage_clear(false)
 
-## プレイヤーと敵の最新のHPを UI（体力ゲージやテキスト）に反映させる処理。
+# ==========================================
+# 補助処理（ヘルパー関数）
+# ==========================================
+
+# ★引数に current_player_block を追加して UI に渡すよう修正！
 func _update_hp_ui():
 	var enemy_max = current_enemy.max_hp if current_enemy else 0
-	battle_ui.update_hp_ui(DeckManager.player_current_hp, DeckManager.player_max_hp, current_enemy_hp, enemy_max)
+	battle_ui.update_hp_ui(DeckManager.player_current_hp, DeckManager.player_max_hp, current_player_block, current_enemy_hp, enemy_max)
 
 ## 山札と捨て札の最新の枚数を UI に反映させる処理。
 func _update_deck_ui() -> void:

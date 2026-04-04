@@ -7,8 +7,8 @@
 script = ExtResource("1_h162y")
 piece_name = "ドロースライム"
 texture = ExtResource("2_rfkre")
-effect_type = 5
-effect_value = 2
+effect_type = 2
+effect_value = 1
 top_joints = Array[int]([0, 1, 2])
 bottom_joints = Array[int]([1, 0, 0])
 left_joints = Array[int]([0, 1, 0])

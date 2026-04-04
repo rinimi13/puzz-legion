@@ -3,13 +3,8 @@
 [ext_resource type="Script" uid="uid://c0lrgpu2osfk" path="res://Scripts/Core/Board/BoradManager.gd" id="1_rgh2o"]
 [ext_resource type="Resource" uid="uid://b6osh7um7s3n7" path="res://Resources/Player/C_slimeprincess.tres" id="2_rgh2o"]
 [ext_resource type="Script" uid="uid://bkeksl7weh1xs" path="res://Scripts/View/BoardView.gd" id="2_v1gob"]
-[ext_resource type="Script" uid="uid://c3ymebsq3mrah" path="res://Scripts/DataModels/PieceData.gd" id="3_jw32o"]
 [ext_resource type="Resource" uid="uid://dl7ibiop3nskl" path="res://Resources/Enemies/E_knight01.tres" id="3_pbw6q"]
-[ext_resource type="Resource" uid="uid://m8s34sobkmja" path="res://Resources/Pieces/Player_Pieces/P_slime02.tres" id="5_bmxlf"]
 [ext_resource type="Script" uid="uid://b7fty3mgabyeb" path="res://Scripts/Core/Board/BattleUI.gd" id="5_pbw6q"]
-[ext_resource type="Resource" uid="uid://cq8qto4itk0xh" path="res://Resources/Pieces/Player_Pieces/P_slime04.tres" id="6_4kpch"]
-[ext_resource type="Resource" uid="uid://bpyouvaf6mg3v" path="res://Resources/Pieces/Player_Pieces/P_slime03.tres" id="7_grg3l"]
-[ext_resource type="Resource" uid="uid://dck085sadg8tn" path="res://Resources/Pieces/Player_Pieces/P_slime01.tres" id="8_frkhe"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jw32o"]
 bg_color = Color(0, 0.86, 0.1433332, 1)
@@ -44,7 +39,6 @@ visibility_layer = 2
 script = ExtResource("1_rgh2o")
 player_data = ExtResource("2_rgh2o")
 current_enemy = ExtResource("3_pbw6q")
-reward_pool = Array[ExtResource("3_jw32o")]([ExtResource("5_bmxlf"), ExtResource("6_4kpch"), ExtResource("7_grg3l"), ExtResource("8_frkhe")])
 
 [node name="BoardView" type="Node2D" parent="." unique_id=240041165]
 position = Vector2(255, 50)

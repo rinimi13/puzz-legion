@@ -10,6 +10,7 @@
 script = ExtResource("2_lar6x")
 enemy_name = "門番の騎士"
 texture = ExtResource("5_d48sm")
+max_hp = 5
 action_list = Array[ExtResource("1_jwjtb")]([ExtResource("2_d48sm"), ExtResource("3_xrqeh")])
 action_weights = Array[float]([0.5, 0.5])
 metadata/_custom_type_script = "uid://bqxwdyqoboon3"

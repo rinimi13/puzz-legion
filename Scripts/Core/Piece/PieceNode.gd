@@ -269,3 +269,81 @@ func _draw_side_joints(joints_array: Array, connected_array: Array, angle: float
 			var color = Color(1.0, 0.9, 0.1, 1.0) if is_connected else Color(1.0, 0.2, 0.2, 1.0)
 			draw_colored_polygon(points, color)
 			draw_polyline(PackedVector2Array([points[0], points[2], points[1]]), Color.BLACK, 1.0)
+
+# ==========================================
+# 6. エフェクト・演出
+# ==========================================
+
+## ターン実行時、自分の順番が回ってきた時に呼ばれる演出処理。
+## アイコン、基本値、開始倍率、ジョイント成功数を渡し、段階的に数値を増やして表示する。
+func play_activation_effect(icon_text: String = "", base_val: int = 0, start_multiplier: float = 1.0, joint_steps: int = 0) -> void:
+	z_index = 50 
+	
+	# ピース本体の色設定
+	var highlight_color = Color(1.0, 1.0, 1.0)
+	if "effect_type" in piece_data:
+		match piece_data.effect_type:
+			0: highlight_color = Color(1.0, 0.4, 0.4) # ATTACK
+			1: highlight_color = Color(0.4, 0.6, 1.0) # DEFEND
+			2: highlight_color = Color(0.4, 1.0, 0.4) # DRAW
+			
+	character_sprite.modulate = highlight_color
+	
+	# ピース本体が跳ねるアニメーション（文字演出とは非同期で進める）
+	var tween = create_tween()
+	tween.tween_property(self, "scale", Vector2(1.2, 1.2), 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.15).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.parallel().tween_property(character_sprite, "modulate", Color(1, 1, 1), 0.3)
+	
+	# 演出終了後に手前表示（z_index）を解除する
+	tween.tween_callback(func(): z_index = 0)
+	
+	if icon_text != "":
+		var floating_label = Label.new()
+		
+		# 最初のテキスト設定（コンボが乗る前の基本数値）
+		floating_label.text = icon_text + " " + str(int(base_val * start_multiplier))
+		floating_label.add_theme_font_size_override("font_size", 28)
+		floating_label.add_theme_color_override("font_color", highlight_color)
+		floating_label.add_theme_color_override("font_outline_color", Color.BLACK)
+		floating_label.add_theme_constant_override("outline_size", 6)
+		
+		floating_label.top_level = true 
+		floating_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		floating_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		floating_label.set_anchors_preset(Control.PRESET_CENTER)
+		add_child(floating_label)
+		
+		floating_label.global_position = self.global_position + Vector2(-20, -50)
+		
+		# 本体が跳ねるのに合わせて一瞬だけ待つ
+		await get_tree().create_timer(0.1).timeout
+		
+		# ==========================================
+		# ★追加：成功したジョイントの数だけ、パラパラと倍率を乗せていく演出！
+		# ==========================================
+		for i in range(joint_steps):
+			await get_tree().create_timer(0.2).timeout # 次の倍率が乗るまでの間隔
+			
+			var cur_mult = start_multiplier + (i + 1) * 0.1
+			floating_label.text = icon_text + " " + str(int(base_val * cur_mult))
+			
+			# 数字が変わった瞬間に少しだけ文字を大きくして「ドン！」という手応えを出す
+			floating_label.pivot_offset = floating_label.size / 2.0
+			floating_label.scale = Vector2(1.5, 1.5)
+			var punch_tween = create_tween()
+			punch_tween.tween_property(floating_label, "scale", Vector2(1.0, 1.0), 0.15).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		
+		# コンボが乗り切った結果の文字を、プレイヤーに少しだけ見せるための待機時間
+		if joint_steps > 0:
+			await get_tree().create_timer(0.3).timeout
+			
+		# 最終的に上にフワッと消える
+		var float_tween = create_tween()
+		float_tween.tween_property(floating_label, "global_position:y", floating_label.global_position.y - 50.0, 0.8).set_ease(Tween.EASE_OUT)
+		float_tween.parallel().tween_property(floating_label, "modulate:a", 0.0, 0.8).set_ease(Tween.EASE_IN)
+		float_tween.tween_callback(floating_label.queue_free) 
+		
+	else:
+		# 文字が出ない場合は、本体のアニメーションが終わるまで待機
+		await tween.finished

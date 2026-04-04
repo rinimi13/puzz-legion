@@ -4,7 +4,7 @@ class_name PieceData
 
 # ★追加：誰が使うピースなのかの判別用
 enum OwnerType { PLAYER_ONLY, ENEMY_ONLY, BOTH }
-enum EffectType { ATTACK, DEFENSE, BUFF, DEBUFF, HEAL, DRAW, MOVE, CHANGE_JOINT }
+enum EffectType { ATTACK, DEFENSE, DRAW, BUFF, DEBUFF, HEAL, MOVE, CHANGE_JOINT }
 
 @export_category("基本情報")
 @export var piece_name: String = "名無しピース"
