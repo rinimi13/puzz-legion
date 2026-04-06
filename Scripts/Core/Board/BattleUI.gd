@@ -53,7 +53,7 @@ func update_hp_ui(player_hp: int, player_max: int, player_block: int, enemy_hp: 
 	if player_hp_bar:
 		player_hp_bar.max_value = player_max
 		player_hp_bar.value = player_hp
-		# ★追加：ブロックがある場合は、HPの横に [🛡️数値] を表示する！
+		#ブロックがある場合は、HPの横に [🛡️数値] を表示する！
 		if player_block > 0:
 			player_hp_text.text = str(player_hp) + " / " + str(player_max) + " [🛡️" + str(player_block) + "]"
 		else:
@@ -194,7 +194,7 @@ func show_reward_selection(options: Array) -> void:
 	bg.add_child(title)
 	
 	# ==========================================
-	# ★修正：中身が増えても常に中心を維持してくれる CenterContainer で囲む
+	# 中身が増えても常に中心を維持してくれる CenterContainer で囲む
 	var center_container = CenterContainer.new()
 	center_container.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.add_child(center_container)
@@ -211,10 +211,7 @@ func show_reward_selection(options: Array) -> void:
 		btn.custom_minimum_size = Vector2(100, 100)
 		btn.flat = true # ボタンの背景を透明にする
 		
-		# ==========================================
-		# ★修正：何よりも先に、ボタンを hbox（画面の世界）に追加する！
 		hbox.add_child(btn)
-		# ==========================================
 		
 		# ピースを生成してボタンの中央に配置
 		var piece_node = PIECE_SCENE.instantiate()
@@ -224,7 +221,7 @@ func show_reward_selection(options: Array) -> void:
 		if piece_node.is_in_group("pieces"): piece_node.remove_from_group("pieces")
 		
 		# ==========================================
-		# ★btn はすでに画面にいるので、ここに追加した瞬間に _ready() が走る！
+		# btn はすでに画面にいるので、ここに追加した瞬間に _ready() が走る
 		btn.add_child(piece_node)
 		
 		# 初期化が終わっているので、安全にアクセスできる
@@ -237,7 +234,7 @@ func show_reward_selection(options: Array) -> void:
 			bg.queue_free() # 選択画面を消す
 		)
 		
-		# ★おまけ演出：マウスが乗ったら少し大きくなる
+		# マウスが乗ったら少し大きくなる
 		btn.mouse_entered.connect(func():
 			var tw = create_tween()
 			tw.tween_property(piece_node, "scale", Vector2(1.2, 1.2), 0.1)

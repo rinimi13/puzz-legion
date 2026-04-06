@@ -320,10 +320,10 @@ func play_activation_effect(icon_text: String = "", base_val: int = 0, start_mul
 		await get_tree().create_timer(0.1).timeout
 		
 		# ==========================================
-		# ★追加：成功したジョイントの数だけ、パラパラと倍率を乗せていく演出！
+		# 成功したジョイントの数だけ、パラパラと倍率を乗せていく演出！
 		# ==========================================
 		for i in range(joint_steps):
-			await get_tree().create_timer(0.2).timeout # 次の倍率が乗るまでの間隔
+			await get_tree().create_timer(0.5).timeout # 次の倍率が乗るまでの間隔
 			
 			var cur_mult = start_multiplier + (i + 1) * 0.1
 			floating_label.text = icon_text + " " + str(int(base_val * cur_mult))

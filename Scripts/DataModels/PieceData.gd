@@ -2,14 +2,14 @@
 extends Resource
 class_name PieceData
 
-# ★追加：誰が使うピースなのかの判別用
+# 誰が使うピースなのかの判別用
 enum OwnerType { PLAYER_ONLY, ENEMY_ONLY, BOTH }
 enum EffectType { ATTACK, DEFENSE, DRAW, BUFF, DEBUFF, HEAL, MOVE, CHANGE_JOINT }
 
 @export_category("基本情報")
 @export var piece_name: String = "名無しピース"
 @export var texture: Texture2D
-@export var owner_type: OwnerType = OwnerType.PLAYER_ONLY # ★追加：インスペクタで切り替え可能
+@export var owner_type: OwnerType = OwnerType.PLAYER_ONLY # インスペクタで切り替え可能
 
 @export_category("効果とアクション")
 @export var effect_type: EffectType = EffectType.ATTACK

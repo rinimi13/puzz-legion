@@ -10,6 +10,6 @@ class_name PlayerData
 @export var starting_deck: Array[PieceData] = []
 
 @export_category("特殊能力")
-# ※後々は専用の SkillData クラスなどを作るのがおすすめですが、今は仮でStringにしておきます
+# 専用の SkillData クラスなどを作成予定
 @export var passive_skills: Array[String] = [] 
 @export var active_skills: Array[String] = []

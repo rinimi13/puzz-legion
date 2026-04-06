@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://xbdxhb07lrwt"]
+
+[ext_resource type="Script" uid="uid://bwthtaecjsm5f" path="res://Scripts/Core/Map/MapScreen.gd" id="1_7xwtr"]
+[ext_resource type="Resource" uid="uid://b6osh7um7s3n7" path="res://Resources/Player/C_slimeprincess.tres" id="2_g3thm"]
+
+[node name="Control" type="Control" unique_id=543036004]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7xwtr")
+player_data = ExtResource("2_g3thm")

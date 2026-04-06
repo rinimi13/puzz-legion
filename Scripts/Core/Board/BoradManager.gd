@@ -124,15 +124,13 @@ func _on_execute_button_pressed() -> void:
 	
 	current_player_block = 0
 	
-	# ==========================================
-	# ★変更：基本の5枚 ＋ 予約分をドローする
+	# 基本の5枚 ＋ 予約分をドローする
 	var total_draw_count = 5 + next_turn_extra_draw
 	hand_manager.draw_new_hand(total_draw_count, self)
 	
 	# ドローが終わったので予約をリセット
 	next_turn_extra_draw = 0
-	# ==========================================
-	
+
 	_update_hp_ui()
 	_update_deck_ui()
 	_update_all_connections()
@@ -192,11 +190,10 @@ func _resolve_effects() -> void:
 			for processed in processed_pieces:
 				new_joints_formed += _count_active_joints_between(p, processed)
 				
-			# ==========================================
-			# ★変更：倍率を計算する前に「適用前の倍率（開始倍率）」を記憶しておく
+			# 倍率を計算する前に「適用前の倍率（開始倍率）」を記憶しておく
 			var start_multiplier = current_multiplier
 			
-			# ジョイント合流ボーナス！（二辺合流なら一気に+0.2倍）
+			# ジョイント合流ボーナス（二辺合流なら一気に+0.2倍）
 			current_multiplier += (new_joints_formed * 0.1)
 			
 			var base_val = p.piece_data.effect_value
@@ -219,13 +216,12 @@ func _resolve_effects() -> void:
 				total_attack += final_val
 				icon_text = "⚔️"
 				
-			# ==========================================
-			# ★書き換え：文字ではなく「計算の元データ」をピースの演出関数に投げる！
+	
+			# 「計算の元データ」をピースの演出関数に投げる
 			await p.play_activation_effect(icon_text, base_val, start_multiplier, new_joints_formed)
 			
 			# 次のピースへ進む前に、波紋が流れるような短い余韻（0.1秒待つ）
 			await get_tree().create_timer(0.1).timeout
-			# ==========================================
 						
 			processed_pieces.append(p)
 			
@@ -365,7 +361,7 @@ func _stage_clear(is_victory: bool):
 	battle_ui.show_result(is_victory)
 	
 	if is_victory:
-		# 勝利の余韻として少し待つ
+		# 余韻
 		await get_tree().create_timer(1.5).timeout
 		
 		# 報酬プールにカードが設定されていれば抽選を開始
@@ -378,16 +374,17 @@ func _stage_clear(is_victory: bool):
 			for i in range(min(3, temp_pool.size())):
 				options.append(temp_pool[i])
 				
-			# UIに選択画面を出させ、プレイヤーが選ぶまで待機する！
+			# UIに選択画面を出させ、プレイヤーが選ぶまで待機する
 			battle_ui.show_reward_selection(options)
 			var chosen_data = await battle_ui.reward_selected
 			
-			# ==========================================
-			# ★マスターデッキにカードを追加！！
+			# マスターデッキにカードを追加
 			DeckManager.master_deck.append(chosen_data)
-			# ==========================================
 			
-			# TODO: 次のステージへの移動処理（MapDataなど）はここに書いていきます
+			# 報酬を獲得した余韻を少し残して、マップ画面に戻る
+			await get_tree().create_timer(1.0).timeout
+			
+			get_tree().change_scene_to_file("res://Scenes/MapScreen.tscn")
 
 # ==========================================
 # 5. 補助処理（ヘルパー関数）
